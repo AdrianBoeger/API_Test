@@ -33,8 +33,6 @@ def main():
         radius += 250
         number_coord += 10
 
-    # get_temp(test_lat, test_lon, key)
-
 
 # Return current longitude and latitude when cityname and ISO2 countrycode is given
 def get_coord_loc(cityname, countrycode, apikey):
@@ -60,8 +58,6 @@ def get_temp(lat, lon, apikey):
 
         if response_weather.status_code == 200:
             weather_dict = json.loads(response_weather.text)
-            # print(weather_dict)
-            # print(weather_dict['main']['temp_min'])
             return weather_dict
         else:
             print('Error: Request failed with status code', response_weather.status_code)
