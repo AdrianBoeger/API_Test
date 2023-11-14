@@ -7,6 +7,7 @@ import math
 key = os.getenv('OpenweatherAPIkey')
 home_city = 'Marschalkenzimmern'
 ISO_countrycode_home_city = 'DE'
+temp_wanted = 20
 
 
 def main():
@@ -19,18 +20,23 @@ def main():
     radius = 500
     number_coord = 10
 
-    while desired_temp < 16:
-
+    while desired_temp <= temp_wanted:
+        print('Run with ' + str(radius) + ' radius and ' + str(number_coord) + ' numbers of coordinates')
         result_coordinates = generate_coordinates(current_lat, current_lon, radius, number_coord)
+        places_above_temp_wanted = {}
 
         for coord in result_coordinates:
             possible_weather = get_temp(coord['latitude'], coord['longitude'], key)
-            if possible_weather['main']['temp_min'] > 15:
-                print('Country ' + possible_weather['sys']['country'])
-                print('City ' + possible_weather['name'])
-                print(possible_weather['main']['temp_min'])
+            if possible_weather['main']['temp_min'] >= temp_wanted:
+                places_above_temp_wanted.update({possible_weather['name']: possible_weather['main']['temp_min']})
                 desired_temp = possible_weather['main']['temp_min']
-        radius += 250
+        if len(places_above_temp_wanted) > 0:
+            max_temp = max(places_above_temp_wanted.values())
+            city = max(places_above_temp_wanted, key=places_above_temp_wanted.get)
+            print(city)
+            print(max_temp)
+
+        radius += 100
         number_coord += 10
 
 
@@ -66,7 +72,7 @@ def get_temp(lat, lon, apikey):
         print('Error: It failed because of:', str(e))
 
 
-# chat gpt suggestion
+# chat gpt suggestion for generating lat/lon coordinates in a radius around a location
 def generate_coordinates(start_lat, start_lon, distance, num_points):
     coordinates = []
 
@@ -86,4 +92,6 @@ def generate_coordinates(start_lat, start_lon, distance, num_points):
 main()
 
 # ToDo:
-#       try to build an app that looks for the nearest (GoogleMaps Routes API) 15°C warm location
+#       try to build an app that looks for the nearest (GoogleMaps Routes API) 20°C warm location
+#       get distance to nearest location with GoogleMaps Routes API
+#       maybe clean locations on islands...
